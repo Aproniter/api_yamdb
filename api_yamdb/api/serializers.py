@@ -25,3 +25,10 @@ class TokenSerializer(serializers.Serializer):
     class Meta:
         fields = ('token',)
         model = User
+
+
+class UsersSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('bio', 'email', 'first_name', 'last_name', 'role', 'username')
+        model = User

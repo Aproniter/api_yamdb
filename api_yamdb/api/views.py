@@ -5,10 +5,12 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework import filters
+
 from rest_framework.views import APIView
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
-    IsAuthenticated
+    IsAuthenticated,
+    IsAdminUser,
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status, mixins
@@ -17,7 +19,8 @@ from rest_framework.response import Response
 
 
 from users.models import User
-from .serializers import RegistrationSerializer, TokenSerializer
+from .serializers import RegistrationSerializer, TokenSerializer, UsersSerializer
+from .permissions import IsAdminOrReadOnly
 
 
 def generate_code():
@@ -67,3 +70,10 @@ class TokenApiView(APIView):
         user.token = token
         user.save()
         return Response(token, status=status.HTTP_200_OK)
+
+class UsersViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UsersSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly ]
+    pagination_class = LimitOffsetPagination
+    search_fields = ('^username',)

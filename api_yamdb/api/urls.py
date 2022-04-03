@@ -6,10 +6,10 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView
 )
 
-from .views import RegistrationApiView, TokenApiView
+from .views import RegistrationApiView, TokenApiView, UsersViewSet
 
 router = SimpleRouter()
-# router.register('auth', AuthViewSet, basename='auth')
+router.register('users', UsersViewSet, basename='users')
 
 urlpatterns = [
     path('v1/auth/signup/', RegistrationApiView.as_view(), name='token_obtain_pair'),
