@@ -27,12 +27,13 @@ class User(AbstractUser):
         null=True,
     )
     token = models.CharField(
-        max_length=300,
+        max_length=1000,
         blank=True,
         null=True
     )
     email = models.EmailField(
         max_length=254,
+        unique=True,
     )
     confirm_code = models.CharField(
         max_length=6,

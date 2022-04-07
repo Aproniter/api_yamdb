@@ -1,19 +1,18 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView
-)
-from .views import (APIGetToken, APISignup, CategoryViewSet, CommentViewSet,
-                    GenreViewSet, ReviewViewSet, TitleViewSet, UsersViewSet)
 
-from .views import RegistrationApiView, TokenApiView, UsersViewSet
+from reviews.views import (
+    CategoryViewSet, CommentViewSet,
+    GenreViewSet, ReviewViewSet, TitleViewSet
+)
+from .views import RegistrationApiView, TokenApiView
+from users.views import UsersViewSet, UserApiView
 
 app_name = 'api'
 
 router = SimpleRouter()
-router.register('users', UsersViewSet, basename='users')
+router.register('^users', UsersViewSet, basename='users')
+
 router.register(
     r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
@@ -40,8 +39,8 @@ router.register(
     basename='genres'
 )
 urlpatterns = [
-    path('v1/auth/signup/', RegistrationApiView.as_view(), name='token_obtain_pair'),
-    path('v1/auth/token/', TokenApiView.as_view(), name='token_obtain_pair'),
-    path('v1/auth/signup/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('v1/auth/signup/', RegistrationApiView.as_view(), name='registration'),
+    path('v1/auth/token/', TokenApiView.as_view(), name='get_token'),
+    path('v1/users/me/', UserApiView.as_view(), name='me'),
     path('v1/', include(router.urls)),
 ]
