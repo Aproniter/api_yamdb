@@ -39,7 +39,11 @@ router.register(
     basename='genres'
 )
 urlpatterns = [
-    path('v1/auth/signup/', RegistrationApiView.as_view(), name='registration'),
+    path(
+        'v1/auth/signup/',
+        RegistrationApiView.as_view(),
+        name='registration'
+    ),
     path('v1/auth/token/', TokenApiView.as_view(), name='get_token'),
     path('v1/users/me/', UserApiView.as_view(), name='me'),
     path('v1/', include(router.urls)),

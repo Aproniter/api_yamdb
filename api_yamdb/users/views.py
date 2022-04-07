@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UsersSerializer
-from api.permissions import *
+from api.permissions import AdminOnly, AuthorPermission
 
 
 class UsersViewSet(viewsets.ModelViewSet):
