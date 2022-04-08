@@ -1,9 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 class User(AbstractUser):
-    """Проверьте, соответствуют ли размеры полей у класса-родителя размеру полей из ТЗ (Redoc). Учтите версию Django, которая используется в проекте."""
+    """Проверьте, соответствуют ли 
+    размеры полей у класса-родителя размеру полей из ТЗ (Redoc). 
+    Учтите версию Django, которая используется в проекте.
+    !!! Изменил размер поля и добавил валидацию username
+    """
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
@@ -12,8 +17,29 @@ class User(AbstractUser):
         (MODERATOR, 'Moderator'),
         (ADMIN, 'Admin'),
     )
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        blank=False,
+        null=False,
+        validators=[RegexValidator(
+            regex=r'^[\w.@+-]*$',
+            message='Имя пользователя содержит недопустимые символы',
+            code='invalid_username'
+        ),
+        ]
+    )
+    first_name = models.CharField(
+        max_length=150,
+        blank=True
+    )
+    last_name = models.CharField(
+        max_length=150,
+        blank=True
+    )
+
     role = models.CharField(
-        max_length=20,
+        max_length=150,
         choices=ROLE,
         default=USER,
     )
@@ -21,22 +47,18 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
-    token = models.CharField(
-        max_length=1000,
-        blank=True,
-        null=True
-    )
-    """Лишнее поле"""
+
     email = models.EmailField(
         max_length=254,
         unique=True,
+        blank=False,
+        null=False
     )
     confirm_code = models.CharField(
         max_length=6,
         blank=True,
         null=True,
     )
-    """А зачем его хранить в базе?"""
 
     @property
     def is_user(self):
@@ -45,7 +67,6 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN
-    """Пропускаются админы со стороны джанго - is_staff"""
 
     @property
     def is_moderator(self):

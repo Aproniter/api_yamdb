@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
+from .validators import validate_year
 
 
 class Category(models.Model):
@@ -49,9 +50,8 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         'год',
+        validators=(validate_year, )
     )
-    """Не повредит валидация"""
-
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
