@@ -13,9 +13,11 @@ class Category(models.Model):
         unique=True,
         db_index=True
     )
+    """Не помешает указать ограничение по длине)"""
 
     def __str__(self):
         return f'{self.name} {self.name}'
+    """Всем моделям не помешает указать Meta с verbose_name и verbose_name_plural"""
 
 
 class Genre(models.Model):
@@ -38,14 +40,15 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(
-        'Название',
-        max_length=200,
+    name = models.TextField(
+        verbose_name='Название',
         db_index=True
     )
     year = models.IntegerField(
         'год',
     )
+    """Не повредит валидация"""
+
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -55,7 +58,6 @@ class Title(models.Model):
     )
     description = models.TextField(
         'Описание',
-        max_length=255,
         null=True,
         blank=True
     )
@@ -74,9 +76,7 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews',
     )
-    text = models.CharField(
-        max_length=200
-    )
+    text = models.TextField()
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -114,9 +114,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments',
     )
-    text = models.CharField(
-        max_length=500
-    )
+    text = models.TextField()
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

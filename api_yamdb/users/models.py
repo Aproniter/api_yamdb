@@ -3,6 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """Проверьте, соответствуют ли размеры полей у класса-родителя размеру полей из ТЗ (Redoc). Учтите версию Django, которая используется в проекте."""
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
@@ -17,12 +18,6 @@ class User(AbstractUser):
         default=USER,
     )
     bio = models.TextField(
-        max_length=300,
-        blank=True,
-        null=True,
-    )
-    password = models.CharField(
-        max_length=100,
         blank=True,
         null=True,
     )
@@ -31,6 +26,7 @@ class User(AbstractUser):
         blank=True,
         null=True
     )
+    """Лишнее поле"""
     email = models.EmailField(
         max_length=254,
         unique=True,
@@ -40,6 +36,7 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    """А зачем его хранить в базе?"""
 
     @property
     def is_user(self):
@@ -48,6 +45,7 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN
+    """Пропускаются админы со стороны джанго - is_staff"""
 
     @property
     def is_moderator(self):

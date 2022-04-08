@@ -17,6 +17,7 @@ class NotAdminSerializer(serializers.ModelSerializer):
 
 
 class GetTokenSerializer(serializers.ModelSerializer):
+    """Не усложняйте простое - используйте обычный серилизатор"""
     username = serializers.CharField(
         required=True)
     confirmation_code = serializers.CharField(
@@ -31,6 +32,13 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
+    """Не очень хорошее решение.
+    Представьте ситуацию:
+    1) Пользователь отправил мейл и юзернейм
+    2) Система отдала ему письмо с токеном и создала пользователя в базе с таким емейлом и юзернеймом
+    3) Пользователь потерял письмо
+    4) Пытается отправить ещё раз - а сервер ему ничего не возвращает, потому что такой емейл уже есть в базе
+    В качестве родительского класса нужно брать обычный сериализатор, во вьюхе использовать get_or_create"""
 
     class Meta:
         model = User
@@ -62,6 +70,7 @@ class TitleReadSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(read_only=True)
 
     class Meta:
+        """Сериализатор только на чтение, так что стоит ограничить список изменяемых полей с помощью read_only_fields"""
         fields = '__all__'
         model = Title
 
@@ -94,6 +103,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate_score(self, value):
         if 0 > value > 10:
+            """Так десятку не поставишь :)"""
             raise serializers.ValidationError('Оценка по 10-бальной шкале!')
         return value
 
