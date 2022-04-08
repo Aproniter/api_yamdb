@@ -33,8 +33,7 @@ class TokenSerializer(serializers.Serializer):
         model = User
 
 
-class UsersSerializer(serializers.ModelSerializer):
-    """Сериализаторы и модели нужно называть в единственном числе"""
+class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (

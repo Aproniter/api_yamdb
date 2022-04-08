@@ -15,9 +15,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import User
-from users.serializers import UsersSerializer, RegistrationSerializer, TokenSerializer
+from users.serializers import UserSerializer, RegistrationSerializer, TokenSerializer
 from reviews.models import Category, Genre, Review, Title
-from reviews.mixins import ModelMixinSet
+from reviews.mixins import CreateDestroyListMixinSet
 from api.filters import TitleFilter
 from api.permissions import (
     AdminModeratorAuthorPermission, IsAdminOrReadOnly,
@@ -89,7 +89,7 @@ https://www.programcreek.com/python/example/99849/django.contrib.auth.tokens.def
         return Response(token, status=status.HTTP_200_OK)
 
 
-class CategoryViewSet(ModelMixinSet):
+class CategoryViewSet(CreateDestroyListMixinSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -98,7 +98,7 @@ class CategoryViewSet(ModelMixinSet):
     lookup_field = 'slug'
 
 
-class GenreViewSet(ModelMixinSet):
+class GenreViewSet(CreateDestroyListMixinSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -159,7 +159,7 @@ class ReviewViewSet(ModelViewSet):
 
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UsersSerializer
+    serializer_class = UserSerializer
     permission_classes = [AdminOnly]
     lookup_field = 'username'
     pagination_class = LimitOffsetPagination
@@ -168,7 +168,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class UserApiView(APIView):
-    serializer_class = UsersSerializer
+    serializer_class = UserSerializer
     permission_classes = [AuthorPermission]
 
     def get(self, request):

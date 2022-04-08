@@ -4,11 +4,11 @@ from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
 from rest_framework.viewsets import GenericViewSet
 
 
-class ModelMixinSet(CreateModelMixin, ListModelMixin,
-                    DestroyModelMixin, GenericViewSet):
-    """Стоит дать более понятное имя для класса, какие методы он реализует"""
+class CreateDestroyListMixinSet(
+    CreateModelMixin, ListModelMixin,
+    DestroyModelMixin, GenericViewSet
+):
     pass
-
 
 
 class CreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

@@ -11,13 +11,16 @@ class Category(models.Model):
     )
     slug = models.SlugField(
         unique=True,
-        db_index=True
+        db_index=True,
+        max_length=200
     )
-    """Не помешает указать ограничение по длине)"""
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
     def __str__(self):
         return f'{self.name} {self.name}'
-    """Всем моделям не помешает указать Meta с verbose_name и verbose_name_plural"""
 
 
 class Genre(models.Model):
@@ -66,6 +69,10 @@ class Title(models.Model):
         related_name='titles',
     )
 
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
     def __str__(self):
         return self.name
 
@@ -103,6 +110,8 @@ class Review(models.Model):
                 name='unique review'
             )]
         ordering = ('pub_date',)
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
 
     def __str__(self):
         return self.text
@@ -124,6 +133,10 @@ class Comment(models.Model):
         auto_now_add=True,
         db_index=True
     )
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
     def __str__(self):
         return self.text
