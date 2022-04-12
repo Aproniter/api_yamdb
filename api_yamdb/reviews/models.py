@@ -7,7 +7,7 @@ from .validators import validate_year
 
 class Category(models.Model):
     name = models.CharField(
-        'Категория',
+        verbose_name='Категория',
         max_length=200
     )
     slug = models.SlugField(
@@ -26,11 +26,11 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(
-        'Жанр',
+        verbose_name='Жанр',
         max_length=200
     )
     slug = models.SlugField(
-        'cлаг жанра',
+        verbose_name='cлаг жанра',
         unique=True,
         db_index=True
     )
@@ -49,7 +49,7 @@ class Title(models.Model):
         db_index=True
     )
     year = models.IntegerField(
-        'год',
+        verbose_name='год',
         validators=(validate_year, )
     )
     category = models.ForeignKey(
@@ -60,7 +60,7 @@ class Title(models.Model):
         blank=True
     )
     description = models.TextField(
-        'Описание',
+        verbose_name='Описание',
         null=True,
         blank=True
     )
@@ -90,7 +90,7 @@ class Review(models.Model):
         related_name='reviews',
     )
     score = models.IntegerField(
-        'Оценка',
+        verbose_name='Оценка',
         validators=(
             MinValueValidator(1),
             MaxValueValidator(10)
@@ -98,7 +98,7 @@ class Review(models.Model):
         error_messages={'validators': 'Оценка от 1 до 10!'}
     )
     pub_date = models.DateTimeField(
-        'дата публикации',
+        verbose_name='дата публикации',
         auto_now_add=True,
         db_index=True
     )

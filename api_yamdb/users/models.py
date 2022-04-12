@@ -4,11 +4,6 @@ from django.core.validators import RegexValidator
 
 
 class User(AbstractUser):
-    """Проверьте, соответствуют ли 
-    размеры полей у класса-родителя размеру полей из ТЗ (Redoc). 
-    Учтите версию Django, которая используется в проекте.
-    !!! Изменил размер полей и добавил валидацию username
-    """
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'

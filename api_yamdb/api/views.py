@@ -15,7 +15,7 @@ from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import User
 from users.serializers import (
-    UserSerializer, RoleSerializer
+    UserSerializer, RoleSerializer, RegistrationSerializer
 )
 from reviews.models import Category, Genre, Review, Title
 from reviews.mixins import CreateDestroyListMixinSet
@@ -43,13 +43,16 @@ account_activation_token = AccountActivationTokenGenerator()
 @api_view(['POST'])
 def registration(request):
     if (
-        'email' not in request.data
-        or 'username' not in request.data
-        or User.objects.filter(email=request.data.get('email'))
+        User.objects.filter(email=request.data.get('email'))
         or User.objects.filter(username=request.data.get('username'))
         or request.data.get('username') == 'me'
     ):
-        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            request.data,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    serializer = RegistrationSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
     user, created = User.objects.get_or_create(
         username=request.data['username'],
         email=request.data['email'],
@@ -150,7 +153,6 @@ class UsersViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     pagination_class = LimitOffsetPagination
     search_fields = ('^username',)
-    """Здесь можно использовать декоратор action для me, чтобы не писать отдельный APIView"""
 
     @action(
         detail=False,
@@ -159,7 +161,7 @@ class UsersViewSet(viewsets.ModelViewSet):
         permission_classes=[AuthorPermission],
         serializer_class=RoleSerializer
     )
-    def me(self, request, *args, **kwargs):
+    def me(self, request):
         user = get_object_or_404(User, username=request.user)
         serializer = self.serializer_class(user)
         if request.method == 'PATCH':
@@ -172,31 +174,3 @@ class UsersViewSet(viewsets.ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# class UserApiView(APIView):
-#     serializer_class = UserSerializer
-#     permission_classes = [AuthorPermission]
-#
-#     # def get(self, request):
-#     #     user = get_object_or_404(User, username=request.user)
-#     #     serializer = self.serializer_class(user)
-#     #     return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#     def patch(self, request):
-#         user = get_object_or_404(User, username=request.user)
-#         serializer = self.serializer_class(
-#             user,
-#             data=request.data,
-#             partial=True
-#         )
-#         if serializer.is_valid():
-#             """Стоит воспользоваться https://www.django-rest-framework.org/api-guide/exceptions/#validationerror
-# И избавиться от if и вложенного блока"""
-#             if 'role' not in serializer.validated_data:
-#                 serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-

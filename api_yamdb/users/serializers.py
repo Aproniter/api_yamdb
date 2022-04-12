@@ -3,7 +3,11 @@ from rest_framework import serializers
 from .models import User
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
+class RegistrationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField(
+        max_length=200
+    )
 
     class Meta:
         fields = ('email', 'username',)
