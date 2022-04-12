@@ -8,12 +8,12 @@ from .validators import validate_year
 class Category(models.Model):
     name = models.CharField(
         verbose_name='Категория',
-        max_length=200
+        max_length=256
     )
     slug = models.SlugField(
         unique=True,
         db_index=True,
-        max_length=200
+        max_length=50
     )
 
     class Meta:
@@ -27,12 +27,13 @@ class Category(models.Model):
 class Genre(models.Model):
     name = models.CharField(
         verbose_name='Жанр',
-        max_length=200
+        max_length=256
     )
     slug = models.SlugField(
         verbose_name='cлаг жанра',
         unique=True,
-        db_index=True
+        db_index=True,
+        max_length=50
     )
 
     class Meta:

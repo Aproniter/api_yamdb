@@ -14,9 +14,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import User
-from users.serializers import (
-    UserSerializer, RoleSerializer, RegistrationSerializer
-)
+
 from reviews.models import Category, Genre, Review, Title
 from reviews.mixins import CreateDestroyListMixinSet
 from api.filters import TitleFilter
@@ -24,9 +22,10 @@ from api.permissions import (
     AdminModeratorAuthorPermission, IsAdminOrReadOnly,
     AdminOnly, AuthorPermission
 )
-from api.serializers import (
+from .serializers import (
     CategorySerializer, CommentSerializer, GenreSerializer,
     ReviewSerializer, TitleReadSerializer, TitleWriteSerializer,
+    UserSerializer, RoleSerializer, RegistrationSerializer
 )
 
 
@@ -42,21 +41,18 @@ account_activation_token = AccountActivationTokenGenerator()
 
 @api_view(['POST'])
 def registration(request):
-    if (
-        User.objects.filter(email=request.data.get('email'))
-        or User.objects.filter(username=request.data.get('username'))
-        or request.data.get('username') == 'me'
-    ):
-        return Response(
-            request.data,
-            status=status.HTTP_400_BAD_REQUEST
-        )
     serializer = RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user, created = User.objects.get_or_create(
-        username=request.data['username'],
-        email=request.data['email'],
-    )
+    try:
+        user, created = User.objects.get_or_create(
+            username=request.data['username'],
+            email=request.data['email'],
+        )
+    except Exception:
+        return Response(
+                    request.data,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
     message = account_activation_token.make_token(user)
     send_mail(
         'Код подтверждения', message,
@@ -162,11 +158,10 @@ class UsersViewSet(viewsets.ModelViewSet):
         serializer_class=RoleSerializer
     )
     def me(self, request):
-        user = get_object_or_404(User, username=request.user)
-        serializer = self.serializer_class(user)
+        serializer = self.serializer_class(request.user)
         if request.method == 'PATCH':
             serializer = self.serializer_class(
-                user,
+                request.user,
                 data=request.data,
                 partial=True,
                 context={"request": request}

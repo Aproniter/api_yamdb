@@ -15,8 +15,6 @@ class User(AbstractUser):
     username = models.CharField(
         max_length=150,
         unique=True,
-        blank=False,
-        null=False,
         validators=[RegexValidator(
             regex=r'^[\w.@+-]*$',
             message='Имя пользователя содержит недопустимые символы',
@@ -34,7 +32,7 @@ class User(AbstractUser):
     )
 
     role = models.CharField(
-        max_length=150,
+        max_length=max(len(role) for role in ROLE),
         choices=ROLE,
         default=USER,
     )
@@ -46,8 +44,6 @@ class User(AbstractUser):
     email = models.EmailField(
         max_length=254,
         unique=True,
-        blank=False,
-        null=False
     )
     confirm_code = models.CharField(
         max_length=6,
