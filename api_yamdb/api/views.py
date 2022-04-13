@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from django.utils import six
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action, api_view
-
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -14,7 +15,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import LimitOffsetPagination
 
 from users.models import User
-
 from reviews.models import Category, Genre, Review, Title
 from reviews.mixins import CreateDestroyListMixinSet
 from api.filters import TitleFilter
@@ -49,10 +49,9 @@ def registration(request):
             username=request.data['username'],
             email=request.data['email'],
         )
-    except Exception:
-        return Response(
-            request.data,
-            status=status.HTTP_400_BAD_REQUEST
+    except IntegrityError:
+        raise ValidationError(
+            'Некорректные username или email.'
         )
     message = account_activation_token.make_token(user)
     send_mail(
@@ -169,6 +168,6 @@ class UsersViewSet(viewsets.ModelViewSet):
                 partial=True,
                 context={"request": request}
             )
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
