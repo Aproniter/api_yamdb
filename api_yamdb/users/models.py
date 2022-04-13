@@ -45,19 +45,16 @@ class User(AbstractUser):
         max_length=254,
         unique=True,
     )
-    confirm_code = models.CharField(
-        max_length=6,
-        blank=True,
-        null=True,
-    )
+
+    @property
+    def is_admin(self):
+        if self.is_staff:
+            return self.role == self.ADMIN
+        return self.role == self.ADMIN
 
     @property
     def is_user(self):
         return self.role == self.USER
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN
 
     @property
     def is_moderator(self):
