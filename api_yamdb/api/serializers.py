@@ -1,3 +1,5 @@
+import re
+
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
@@ -124,17 +126,20 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.Serializer):
     email = serializers.EmailField(
-        max_length=200
+        max_length=254
     )
     username = serializers.CharField(
-        max_length=200
+        max_length=150
     )
 
     class Meta:
         fields = ('email', 'username',)
-        model = User
 
     def validate_username(self, data):
+        if re.match(r'^[\\w.@+-]+\\z', data):
+            raise serializers.ValidationError(
+                'Недопустимые символы в username.'
+            )
         if data == 'me':
             raise serializers.ValidationError(
                 'Использовать имя "me" в качестве username запрещено.'
@@ -144,13 +149,21 @@ class RegistrationSerializer(serializers.Serializer):
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
-        max_length=200
+        max_length=150
     )
 
     class Meta:
         fields = ('token',)
 
     def validate_username(self, data):
+        if re.match(r'^[\\w.@+-]+\\z', data):
+            raise serializers.ValidationError(
+                'Недопустимые символы в username.'
+            )
+        if data == 'me':
+            raise serializers.ValidationError(
+                'Использовать имя "me" в качестве username запрещено.'
+            )
         get_object_or_404(
             User,
             username=data
