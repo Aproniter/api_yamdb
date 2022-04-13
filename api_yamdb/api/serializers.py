@@ -143,9 +143,19 @@ class RegistrationSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        max_length=200
+    )
 
     class Meta:
         fields = ('token',)
+
+    def validate_username(self, data):
+        get_object_or_404(
+            User,
+            username=data
+        )
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -162,6 +172,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = '__all__'
+        model = User
 
     def validate(self, data):
         if not self.context['request'].user.is_staff:

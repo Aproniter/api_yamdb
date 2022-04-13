@@ -25,7 +25,8 @@ from api.permissions import (
 from .serializers import (
     CategorySerializer, CommentSerializer, GenreSerializer,
     ReviewSerializer, TitleReadSerializer, TitleWriteSerializer,
-    UserSerializer, RoleSerializer, RegistrationSerializer
+    UserSerializer, RoleSerializer, RegistrationSerializer,
+    TokenSerializer
 )
 
 
@@ -65,10 +66,10 @@ def registration(request):
 
 @api_view(['POST'])
 def get_token(request):
-    if 'username' not in request.data:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    serializer = TokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
     user = get_object_or_404(
-        User, username=request.data.get('username')
+        User, username=serializer.validated_data.get('username')
     )
     if not account_activation_token.check_token(
             user, request.data.get('confirmation_code')
@@ -121,7 +122,9 @@ class CommentViewSet(ModelViewSet):
     def perform_create(self, serializer):
         review = get_object_or_404(
             Review,
-            id=self.kwargs.get('review_id'))
+            id=self.kwargs.get('review_id'),
+            title_id=self.kwargs.get('title_id'),
+        )
         serializer.save(author=self.request.user, review=review)
 
 
