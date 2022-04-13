@@ -51,9 +51,9 @@ def registration(request):
         )
     except Exception:
         return Response(
-                    request.data,
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            request.data,
+            status=status.HTTP_400_BAD_REQUEST
+        )
     message = account_activation_token.make_token(user)
     send_mail(
         'Код подтверждения', message,
